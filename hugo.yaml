@@ -1,4 +1,4 @@
-baseURL: https://example.org/  # TODO: Update this to your actual domain
+baseURL: https://blog.shuzhao.me/
 languageCode: en-us
 title: Shu's Blog
 theme: ["PaperMod"]
