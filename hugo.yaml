@@ -1,0 +1,159 @@
+baseURL: https://example.org/  # TODO: Update this to your actual domain
+languageCode: en-us
+title: Shu's Blog
+theme: ["PaperMod"]
+
+# Pagination
+pagination:
+  pagerSize: 5
+
+# Enable features
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+enableEmoji: true
+
+# Minification for production
+minify:
+  disableXML: true
+  minifyOutput: true
+
+# Output formats for RSS and search
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+# PaperMod Parameters
+params:
+  env: production
+  title: Shu's Blog
+  description: "Welcome to my personal blog where I share thoughts and experiences"
+  keywords: [Blog, Personal, Technology, Development]
+
+  # Date format (using Go's reference time format)
+  DateFormat: "January 2, 2006"
+
+  # Theme settings
+  defaultTheme: auto  # auto, light, or dark
+  disableThemeToggle: false
+
+  # Display settings
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  comments: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: false
+  tocopen: false
+
+  # Math support
+  math: true  # Enable KaTeX globally (can be overridden per page)
+
+  # Home Info Mode (simple welcome card)
+  homeInfoParams:
+    Title: "Hi there 👋"
+    Content: |
+      Welcome to my personal blog!
+
+      I share my thoughts and experiences that interest me.
+
+  # Social Icons (update with your actual profiles)
+  socialIcons:
+    - name: github
+      url: "https://github.com/Tree-Shu-Zhao"
+    - name: email
+      url: "mailto:shuzhao.cs@gmail.com"
+
+  # Assets configuration
+  assets:
+    favicon: "/favicon.png"
+
+  # Cover image settings
+  cover:
+    hidden: false
+    hiddenInList: false
+    hiddenInSingle: false
+
+  # Search
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    limit: 10
+    keys: ["title", "permalink", "summary", "content"]
+
+# Menu configuration
+menu:
+  main:
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 10
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 20
+    - identifier: archive
+      name: Archive
+      url: /archive/
+      weight: 30
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 40
+
+# Taxonomies
+taxonomies:
+  category: categories
+  tag: tags
+  series: series
+
+# Markdown settings
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    anchorLineNos: false
+    codeFences: true
+    guessSyntax: false
+    lineNos: false
+    noClasses: false
+    style: monokai
+
+# Privacy settings
+privacy:
+  vimeo:
+    disabled: false
+    simple: true
+  x:
+    disabled: false
+    enableDNT: true
+    simple: true
+  instagram:
+    disabled: false
+    simple: true
+  youtube:
+    disabled: false
+    privacyEnhanced: true
+
+# Services (uncomment and configure if needed)
+# services:
+#   googleAnalytics:
+#     ID: G-MEASUREMENT_ID
+#   disqus:
+#     shortname: your-disqus-shortname
