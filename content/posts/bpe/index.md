@@ -10,7 +10,7 @@ weight: 1
 math: true
 ---
 
-# 1. Introduction
+## 1. Introduction
 
 Neural networks cannot process text directly, so we must convert raw strings into embeddings (vectors). Tokens serve as the bridge: raw text is first split into tokens, each mapped to an integer ID that indexes into an embedding look-up table. There are several approaches to tokenization:
 
@@ -18,39 +18,39 @@ Neural networks cannot process text directly, so we must convert raw strings int
 - **Character-level tokenization** uses individual characters as tokens. This guarantees coverage of any word or sentence, but dramatically increases sequence length, which is a particular concern for transformer-based models where computational cost scales quadratically with length.
 - **Subword tokenization** strikes a balance based on a simple insight: common words should remain intact, while rare words should be broken into meaningful subunits. For example, "tokenizers" might become ["token", "izers"], preserving semantic information while handling unseen combinations. This keeps vocabulary sizes manageable (typically 30K–50K tokens) while still allowing the representation of arbitrary text.
 
-# 2. Byte Pair Encoding
+## 2. Byte Pair Encoding
 
 Byte Pair Encoding (BPE) [1] is a subword tokenization algorithm. It builds a vocabulary through iterative merging. Starting from individual characters, it repeatedly finds the most frequent adjacent pair and merges it into a new token. After thousands of iterations, the vocabulary naturally captures common words as single tokens, frequent subwords as intermediate units, and individual characters as fallbacks for rare patterns.
 
-## Training
+**Training**
 
 1. Initialize the vocabulary with all unique characters in the corpus
 2. Count the frequency of every adjacent token pair
 3. Merge the most frequent pair into a new token
 4. Repeat steps 2–3 until reaching the desired vocabulary size
 
-## Encoding
+**Encoding**
 
 1. Split input text into characters
 2. Apply the learned merge rules in the same order they were learned
 3. Map the resulting tokens to their integer IDs
 
-## Example
+**Example**
 
 Consider training BPE on the corpus: `"aab aab aac"`
 
-### Initialization:
+*Initialization:*
 
 * Vocabulary: `{a, b, c, ' '}`
 * Text as tokens: `[a, a, b, ' ', a, a, b, ' ', a, a, c]`
 
-### Iteration 1:
+*Iteration 1:*
 
 * Pair frequencies: `(a, a): 3`, `(a, b): 2`, `(b, ' '): 2`, `(' ', a): 2`, `(a, c): 1`
 * Merge `(a, a)` → new token `X`
 * Text becomes: `[X, b, ' ', X, b, ' ', X, c]`
 
-### Iteration 2:
+*Iteration 2:*
 
 * Pair frequencies: `(X, b): 2`, `(b, ' '): 2`, `(' ', X): 2`, `(X, c): 1`
 * Merge `(X, b)` → new token `Y` (ties broken arbitrarily)
@@ -58,7 +58,7 @@ Consider training BPE on the corpus: `"aab aab aac"`
 
 After two merges, the common pattern `aab` is captured as a single token `Y`, while the rarer `aac` is denoted as `[X, c]`.
 
-# 3. Pre-tokenization
+## 3. Pre-tokenization
 
 Before applying BPE merges, GPT-2 [2] and subsequent OpenAI models first split text using a regex pattern. This pre-tokenization step serves a critical purpose: it prevents BPE from merging tokens across word boundaries or mixing semantically unrelated character types.
 
@@ -66,7 +66,7 @@ Without pre-tokenization, BPE might merge the space before a word with the word 
 
 GPT-2 uses the regex pattern `'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+`. This pattern splits text into chunks, and **BPE operates within each chunk independently**. Let's examine each case:
 
-## English contractions
+**English contractions**
 
 **`'s|'t|'re|'ve|'m|'ll|'d`**
 
@@ -79,7 +79,7 @@ These patterns capture common English suffixes that attach to words via apostrop
 | `"you've"` | `["you", "'ve"]` |
 | `"she'll"` | `["she", "'ll"]` |
 
-## Optional space followed by letters
+**Optional space followed by letters**
 
 `  ?\p{L}+`
 
@@ -90,7 +90,7 @@ These patterns capture common English suffixes that attach to words via apostrop
 | `"hello world"` | `["hello", " world"]` |
 | `"New York"`    | `["New", " York"]`    |
 
-## Optional space followed by numbers
+**Optional space followed by numbers**
 
 `  ?\p{N}+`
 
@@ -102,7 +102,7 @@ These patterns capture common English suffixes that attach to words via apostrop
 | `"price100"` | `["price", "100"]`     |
 | `"room 42a"` | `["room", " 42", "a"]` |
 
-## Optional space followed by punctuation/symbols
+**Optional space followed by punctuation/symbols**
 
 `  ?[^\s\p{L}\p{N}]+`
 
@@ -114,7 +114,7 @@ This matches anything that is not whitespace, letters, or numbers — effectivel
 | `"Hello, world!"` | `["Hello", ",", " world", "!"]` |
 | `"$100"`          | `["$", "100"]`                  |
 
-## Trailing whitespace (not followed by non-whitespace)
+**Trailing whitespace (not followed by non-whitespace)**
 
 `\s+(?!\S)`
 
@@ -125,7 +125,7 @@ The negative lookahead `(?!\S)` ensures this matches whitespace only at the end 
 | `"end   "`     | `["end", "   "]`     |
 | `"text    \n"` | `["text", "    \n"]` |
 
-## Remaining whitespace
+**Remaining whitespace**
 
 `\s+`
 
@@ -136,9 +136,9 @@ This catches any whitespace sequences not matched by the previous pattern — ty
 | `"a   b"`  | `["a", " ", " ", " ", " b"]` |
 | `"x\t\ty"` | `["x", "\t\t", "y"]`         |
 
-# 4. Implementation from Scratch
+## 4. Implementation from Scratch
 
-## Core Functions
+**Core Functions**
 
 ```python
 # Get pair frequencies
@@ -162,7 +162,7 @@ def merge(tokens, most_freq_pair, assigned_id):
     return res
 ```
 
-## Training
+**Training**
 
 ```python
 vocab_size = 276
@@ -180,7 +180,7 @@ for i in range(num_merges):
     merges[most_freq_pair] = assigned_id
 ```
 
-## Encoding
+**Encoding**
 
 ```python
 def encode(text):
@@ -194,7 +194,7 @@ def encode(text):
     return tokens
 ```
 
-## Decoding
+**Decoding**
 
 ```python
 vocab = {idx: bytes([idx]) for idx in range(256)}
@@ -209,8 +209,8 @@ def decode(ids):
 
 ---
 
-# References
+## References
 
 [1] https://en.wikipedia.org/wiki/Byte-pair_encoding
 
-[2] Radford, Alec, et al. "Language models are unsupervised multitask learners." *OpenAI blog* 1.8 (2019): 9.
+[2] Radford, Alec, et al. "Language models are unsupervised multitask learners." OpenAI blog 1.8 (2019): 9.
